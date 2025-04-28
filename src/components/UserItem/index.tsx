@@ -43,8 +43,8 @@ export default function UserItem({ user, onAction }: UserItemProps) {
           </span>
         )}
       </td>
-      <td className="px-4 py-3">sdaasdf</td>
-      <td className="px-4 py-3">$2999</td>
+      <td className="px-4 py-3">{(new Date(user.createdAt)).toLocaleString()}</td>
+      <td className="px-4 py-3">{(new Date(user.updatedAt)).toLocaleString()}</td>
       <td className="px-4 py-3 flex items-center justify-end">
         <button
           onClick={() => setIsDropdownOpen(true)}

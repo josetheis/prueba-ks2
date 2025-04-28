@@ -48,8 +48,8 @@ function App() {
       name,
       email,
       status: "ACTIVE",
-      createdAt: "",
-      updatedAt: "",
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     };
 
     setUsers([...users, newUser]);
@@ -67,6 +67,7 @@ function App() {
       ...userFound,
       name: data.name,
       email: data.email,
+      updatedAt: Date.now()
     };
 
     setUsers(users);
