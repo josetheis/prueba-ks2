@@ -6,15 +6,22 @@ import Title from "./components/Title";
 import UserList from "./components/UserList";
 import AddUserDTO from "./interfaces/AddUserDTO";
 import AddUser from "./components/AddUser";
+import EditUser from "./components/EditUser";
+import EditUserDTO from "./interfaces/EditUserDTO";
 
 function App() {
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User>();
+  const [users, setUsers] = useState<User[]>(() => {
+    const localUsers = localStorage.getItem('USERS');
+    return localUsers ? JSON.parse(localUsers) : [];
+  });
 
   useEffect(() => {
-    const localUsers = localStorage.getItem('USERS');
+    const localUsers = localStorage.getItem("USERS");
     setUsers(localUsers == null ? [] : JSON.parse(localUsers));
-  }, [])
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("USERS", JSON.stringify(users));
@@ -22,6 +29,16 @@ function App() {
 
   const closeHandler = () => {
     setIsSaveModalOpen(false);
+  };
+
+  const openEditModal = (id: number) => {
+    const userFound = users.find((user) => user.id === id);
+    setSelectedUser(userFound);
+    setIsEditModalOpen(true);
+  };
+
+  const deleteHandler = (id: number) => {
+    setUsers(users.filter((user) => user.id !== id));
   };
 
   const saveHandler = ({ email, name }: AddUserDTO) => {
@@ -39,8 +56,34 @@ function App() {
     setIsSaveModalOpen(false);
   };
 
+  const editHandler = ({ id }: User, data: EditUserDTO) => {
+    const userIndex = users.findIndex((u) => u.id === id);
+    if (userIndex === -1) {
+      throw new Error("No se pudo encontrar un usuario con el id: " + id);
+    }
+
+    const userFound = users[userIndex];
+    users[userIndex] = {
+      ...userFound,
+      name: data.name,
+      email: data.email,
+    };
+
+    setUsers(users);
+    setIsEditModalOpen(false);
+  };
+
   return (
     <>
+      {/* MODALS */}
+      {selectedUser && (
+        <EditUser
+          user={selectedUser}
+          isOpen={isEditModalOpen}
+          onClose={closeHandler}
+          onEdit={(data) => editHandler(selectedUser, data)}
+        />
+      )}
       <AddUser
         isOpen={isSaveModalOpen}
         onClose={closeHandler}
@@ -67,6 +110,8 @@ function App() {
             <div className="overflow-x-auto">
               <UserList
                 users={users}
+                onDelete={deleteHandler}
+                onEdit={openEditModal}
               />
             </div>
           </div>

@@ -3,9 +3,23 @@ import UserItem from "../UserItem";
 
 interface UserListProps {
   users: User[];
+  onEdit: (id: number) => void;
+  onDelete: (id: number) => void;
 }
 
-export default function UserList({ users }: UserListProps) {
+export default function UserList({ users, onDelete, onEdit }: UserListProps) {
+  const actionHandler = (id: number, action: 'edit' | 'delete') => {
+    switch(action) {
+      case 'delete':
+        onDelete(id);
+        break;
+      case 'edit':
+        onEdit(id);
+        break;
+      default:
+        throw new Error('La accion requerida no ha sido implementada');
+    }
+  }
 
   return (
     <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -33,7 +47,7 @@ export default function UserList({ users }: UserListProps) {
       </thead>
       <tbody>
         {users.map((user) => (
-          <UserItem key={user.id} user={user} />
+          <UserItem onAction={actionHandler} key={user.id} user={user} />
         ))}
       </tbody>
     </table>

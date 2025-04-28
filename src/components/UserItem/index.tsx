@@ -3,11 +3,17 @@ import User from "../../interfaces/User";
 
 interface UserItemProps {
   user: User;
+  onAction: (id:number, action: 'edit' | 'delete') => void;
 }
 
-export default function UserItem({ user }: UserItemProps) {
+export default function UserItem({ user, onAction }: UserItemProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const actionHandler = (action: 'edit' | 'delete') => {
+    setIsDropdownOpen(false);
+    onAction(user.id, action)
+  }
 
   useEffect(() => {
     document.addEventListener('mousedown', (event: MouseEvent) => {
@@ -69,6 +75,7 @@ export default function UserItem({ user }: UserItemProps) {
             >
               <li>
                 <a
+                    onClick={() => actionHandler('edit')}
                   href="#"
                   className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                 >
@@ -77,6 +84,7 @@ export default function UserItem({ user }: UserItemProps) {
               </li>
               <li>
                 <a
+                onClick={() => actionHandler('delete')}
                   href="#"
                   className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                 >
